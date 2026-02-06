@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Vendas & Logística</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;}
+        button { background: #28a745; color: white; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background: #218838; }
+        h2 { text-align: center; color: #333; }
+        .secao { border-top: 2px solid #eee; margin-top: 20px; padding-top: 10px; }
+        .titulo-secao { font-size: 0.9em; color: #666; font-weight: bold; text-transform: uppercase; }
+        #mensagem { text-align: center; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registro de Vendas</h2>
+
+    <input type="password" id="senha" placeholder="Senha de Acesso" required>
+
+    <div class="secao">
+        <div class="titulo-secao">Produto</div>
+        <input type="text" id="produto" placeholder="Nome do Produto/Modelo" required>
+        <input type="number" id="qtd" placeholder="Quantidade Vendida" required>
+        <input type="number" id="valorUnitario" placeholder="Valor Unitário (Tabela)" step="0.01" required>
+        <input type="number" id="precoVendido" placeholder="Valor Total da Venda (Real)" step="0.01" required>
+        <input type="number" id="taxas" placeholder="Taxas Cobradas (R$)" step="0.01">
+    </div>
+
+    <div class="secao">
+        <div class="titulo-secao">Logística</div>
+        <input type="number" id="pacotes" placeholder="Qtd. Pacotes" required>
+        <input type="number" id="custoLogistica" placeholder="Custo do Envio (R$)" step="0.01" required>
+    </div>
+
+    <button onclick="enviarDados()" id="btnEnviar">SALVAR VENDA</button>
+    <div id="mensagem"></div>
+</div>
+
+<script>
+    // --- COLE SEU URL DO APPS SCRIPT AQUI DENTRO DAS ASPAS ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1BW9JjgC_ORsib0LBRRfkHER1vUCgp7fFQSvpc6X6XT-upfuKY1sVODRdGWWVkrYrLw/exec"; 
+
+    function enviarDados() {
+        const btn = document.getElementById('btnEnviar');
+        const msg = document.getElementById('mensagem');
+        
+        // Coletar dados
+        const dados = {
+            senha: document.getElementById('senha').value,
+            produto: document.getElementById('produto').value,
+            qtd: document.getElementById('qtd').value,
+            valorUnitario: document.getElementById('valorUnitario').value,
+            precoVendido: document.getElementById('precoVendido').value,
+            taxas: document.getElementById('taxas').value,
+            pacotes: document.getElementById('pacotes').value,
+            custoLogistica: document.getElementById('custoLogistica').value
+        };
+
+        if(!dados.senha || !dados.produto) {
+            msg.innerText = "Preencha a senha e o produto!";
+            msg.style.color = "red";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Enviando...";
+        msg.innerText = "";
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'sucesso') {
+                msg.innerText = "Venda Salva com Sucesso!";
+                msg.style.color = "green";
+                limparFormulario();
+            } else {
+                msg.innerText = "Erro: " + data.mensagem;
+                msg.style.color = "red";
+            }
+            btn.disabled = false;
+            btn.innerText = "SALVAR VENDA";
+        })
+        .catch(error => {
+            msg.innerText = "Erro de conexão.";
+            console.error(error);
+            btn.disabled = false;
+            btn.innerText = "SALVAR VENDA";
+        });
+    }
+
+    function limparFormulario() {
+        // Limpa tudo menos a senha para facilitar multiplos lançamentos
+        document.getElementById('produto').value = "";
+        document.getElementById('qtd').value = "";
+        document.getElementById('valorUnitario').value = "";
+        document.getElementById('precoVendido').value = "";
+        document.getElementById('taxas').value = "";
+        document.getElementById('pacotes').value = "";
+        document.getElementById('custoLogistica').value = "";
+    }
+</script>
+
+</body>
+</html>
