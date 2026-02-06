@@ -7,17 +7,17 @@ import os
 import shutil
 
 # --- CONFIGURAÇÃO ---
-st.set_page_config(page_title="Gestão Pro", layout="wide", page_icon="🛡️")
+st.set_page_config(page_title="Gestão.V12", layout="wide", page_icon="🛡️")
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Importação segura
+# Importação
 try:
     from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode
 except ImportError:
     st.error("⚠️ Erro crítico: Biblioteca visual não instalada.")
     st.stop()
 
-# --- SISTEMA DE BACKUP OTIMIZADO (TOP 3) ---
+# --- SISTEMA DE BACKUP OTIMIZADO (ult 3) ---
 def realizar_backup():
     db_file = 'meu_negocio_v8.db'
     if os.path.exists(db_file):
@@ -31,7 +31,6 @@ def realizar_backup():
         try:
             shutil.copy2(db_file, backup_name)
             
-            # --- LIMPEZA AGRESSIVA: MANTÉM SÓ 3 ---
             # Lista todos os arquivos na pasta backups com o caminho completo
             arquivos = [os.path.join('backups', f) for f in os.listdir('backups')]
             # Filtra apenas arquivos (ignora pastas se tiver)
@@ -45,7 +44,7 @@ def realizar_backup():
                 os.remove(arquivo_velho)
                 
         except Exception:
-            pass # Silencioso para não atrapalhar
+            pass # nao ficar emitindo
 
 realizar_backup()
 
@@ -60,8 +59,8 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
-# Banco de dados
+---------------------------------------------------------------------------------------------------------
+# CRIACAO BANCO DADOS
 engine = create_engine('sqlite:///meu_negocio_v8.db')
 
 def init_db():
@@ -93,7 +92,7 @@ def init_db():
 
 init_db()
 
-# --- FUNÇÃO AUXILIAR DE SEGURANÇA ---
+# --- FUN AUXILIAR DE SEGURANÇA ---
 def extrair_ids_seguro(selecionados):
     ids_validos = []
     if isinstance(selecionados, pd.DataFrame):
@@ -144,7 +143,7 @@ def criar_tabela_clean(df, key_id):
     )
 
 # --- APP ---
-st.title("🛡️ Gestão Financeira Segura")
+st.title(" Gestão.v12")
 
 # --- LANÇAMENTOS ---
 with st.expander("➕ Novo Lançamento", expanded=True):
@@ -270,4 +269,5 @@ with col2:
             else:
                 st.warning("Selecione itens.")
     else:
+
         st.info("Sem dados.")
